@@ -1,0 +1,28 @@
+* check for duplicate function names when generating the functions facade
+  * -> done. Maybe do this differently because it might be considered 'ugly' in the way to functionNamesFilter works.. (filter having a state..)
+
+Possible improvements:
+* don't resolve all FunctionsFiles, maybe somehow only link the FunctionsFile with matching name, so only that gets resolved later inside IncludeImpl
+  * Maybe by implementing IScope ourself
+  * -> implemented differently now, inside FunctionsFileScopeHelper: using visible containers -> visible resource descriptions -> exported object descriptions
+
+* think about how to resolve duplicate FunctionsFile names:
+  * currently it scans all visible resources for FunctionsFiles
+  * somehow allow specifying a concrete FunctionsFile (more qualified name, besides name only? maybe use importURIs similar to ImportUriGlobalScopeProvider)
+  * -> might not really be needed, by looking at the already existing example applications having all proper unique reaction-segment names ..
+  
+* think about how to resolve duplicate functions names in different includes
+  * is there a way to 'fully qualify' function calls?
+  * maybe by optionally specifying an function-name prefix which gets applied to all imported functions
+    * -> done.
+
+* including functions from other projects/etc. requires them to export the corresponding generated package for the generated functions
+  * is there a better way to reference external functions?
+  * is there a way to generically check if the generated code has errors
+    (ex. due to external package not being exported) and then forward that error
+    to the author of the .functions file?
+  * -> might be to tricky to do..
+
+* maybe use 'import' keyword, similar to how MirBase uses it as well for metamodelImports
+  * error when generating the language parser: 'ambiguous ..'
+  * -> using 'import functions from' now, can be easily changed to something else (as long as it's not 'import' only ..)
