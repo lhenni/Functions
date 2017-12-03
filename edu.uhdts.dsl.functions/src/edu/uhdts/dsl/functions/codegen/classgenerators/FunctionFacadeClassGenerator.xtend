@@ -61,14 +61,7 @@ class FunctionFacadeClassGenerator extends ClassGenerator {
 	}
 
 	private def JvmOperation generateCallMethod(Function function) {
-		val functionNameGenerator = function.functionClassNameGenerator;
-		function.associatePrimary(function.toMethod(getCallMethodName(function), typeRef(Boolean.TYPE)) [
-			visibility = JvmVisibility.PUBLIC;
-			body = '''
-				«functionNameGenerator.qualifiedName» calledFunction = new «functionNameGenerator.qualifiedName»();
-				return calledFunction.executeFunction();
-			'''
-		])
+		return generateCallMethod(function, getCallMethodName(function));
 	}
 
 	private def String getImportedCallMethodName(FunctionsImport functionsImport, Function function) {
@@ -77,9 +70,12 @@ class FunctionFacadeClassGenerator extends ClassGenerator {
 	}
 
 	private def JvmOperation generateImportedCallMethod(FunctionsImport functionsImport, Function function) {
+		return generateCallMethod(function, getImportedCallMethodName(functionsImport, function));
+	}
+
+	private def JvmOperation generateCallMethod(Function function, String methodName) {
 		val functionNameGenerator = function.functionClassNameGenerator;
-		function.associatePrimary(function.toMethod(getImportedCallMethodName(functionsImport, function),
-			typeRef(Boolean.TYPE)) [
+		function.associatePrimary(function.toMethod(methodName, typeRef(Boolean.TYPE)) [
 			visibility = JvmVisibility.PUBLIC;
 			body = '''
 				«functionNameGenerator.qualifiedName» calledFunction = new «functionNameGenerator.qualifiedName»();
