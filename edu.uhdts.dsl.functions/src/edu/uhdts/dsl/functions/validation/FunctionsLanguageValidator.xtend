@@ -23,7 +23,7 @@ import edu.uhdts.dsl.functions.functionsLanguage.FunctionsImport
  */
 class FunctionsLanguageValidator extends AbstractFunctionsLanguageValidator {
 
-	@Inject FunctionsImportScopeHelper functionsFileScopeHelper
+	@Inject FunctionsImportScopeHelper functionsImportScopeHelper
 
 	@Check
 	def checkFunctionsFile(FunctionsFile functionsFile) {
@@ -56,7 +56,7 @@ class FunctionsLanguageValidator extends AbstractFunctionsLanguageValidator {
 		}
 
 		// detect duplicate functions segment names globally:
-		val visibleFunctionsFiles = functionsFileScopeHelper.
+		val visibleFunctionsFiles = functionsImportScopeHelper.
 			getVisibleFunctionsSegmentDescriptions(functionsFile.eResource, false);
 		for (functionsSegment : functionsFile.functionsSegments) {
 			val functionsSegmentName = functionsSegment.name;
