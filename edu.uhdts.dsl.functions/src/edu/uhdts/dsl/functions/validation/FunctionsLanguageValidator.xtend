@@ -123,8 +123,8 @@ class FunctionsLanguageValidator extends AbstractFunctionsLanguageValidator {
 		if (!Character.isLowerCase(function.name.charAt(0))) {
 			warning("Function names should start lower case", FunctionsLanguagePackage.Literals.FUNCTION__NAME);
 		}
-		if (function.name.contains(IMPORTED_FUNCTION_PREFIX_DELIMITER)) {
-			warning("Function names should not contain " + IMPORTED_FUNCTION_PREFIX_DELIMITER,
+		if (function.name.contains(IMPORTED_FUNCTION_PREFIX_SEPARATOR)) {
+			warning("Function names should not contain " + IMPORTED_FUNCTION_PREFIX_SEPARATOR,
 				FunctionsLanguagePackage.Literals.FUNCTION__NAME);
 		}
 	}

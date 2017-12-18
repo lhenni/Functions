@@ -16,6 +16,6 @@ final class FunctionCallMethodNames {
 	
 	public static def String getImportedCallMethodName(FunctionsImport functionsImport, Function function) {
 		if(functionsImport.prefix === null) return getCallMethodName(function);
-		return functionsImport.prefix + IMPORTED_FUNCTION_PREFIX_DELIMITER + getCallMethodName(function);
+		return functionsImport.prefix + IMPORTED_FUNCTION_PREFIX_SEPARATOR + getCallMethodName(function);
 	}
 }
