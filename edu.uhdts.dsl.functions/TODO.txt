@@ -1,28 +1,41 @@
-* check for duplicate function names when generating the functions facade
-  * -> done. Maybe do this differently because it might be considered 'ugly' in the way to functionNamesFilter works.. (filter having a state..)
+Done:
+* FunctionsFile -> FunctionsSegment (multiple segments per file, similar to reactions language)
+  * imports now import segments
+  * imports at file level, affect all included segments
+  * added functionsFile reference to functionsSegment, so that the imports can be found during code-gen (similar to how functions reference segment they are contained in)
+* added outline entries for functions imports (in ui project)
+* validation:
+  * duplicate functions imports: imports for same segments (ignoring prefix) -> error
+  * duplicate functions segment names:
+    * in same file -> error
+      * otherwise: code-gen in same package, with name clashes, can result in issues:
+      * because: each segment processes the functions file functions imports:
+        * if one segment has a function which also exists in an imported segment, the imported function doesn't get imported (filtered)
+        * but if a later processed segment in the same file doesn't have this function,
+          the imported function doesn't get filtered and overwrites the function of the other segment in the same package / facade
+        * alternative fix: consider all functions of all segments with the same name in the same file during filtering..
+  * duplicate function names:
+    * in same segment: already existed, changed to use FunctionCallMethodNames instead of FunctionClassNameGenerator
+      -> should not make a difference, but allows reusing the alreadyCheckedFunctions mapping
+    * between local functions and imported functions:
+      -> warning at the local function
+    * between imported functions
+      -> warning at the later import(s) about ambiguity
 
-Possible improvements:
-* don't resolve all FunctionsFiles, maybe somehow only link the FunctionsFile with matching name, so only that gets resolved later inside IncludeImpl
-  * Maybe by implementing IScope ourself
-  * -> implemented differently now, inside FunctionsFileScopeHelper: using visible containers -> visible resource descriptions -> exported object descriptions
 
-* think about how to resolve duplicate FunctionsFile names:
-  * currently it scans all visible resources for FunctionsFiles
-  * somehow allow specifying a concrete FunctionsFile (more qualified name, besides name only? maybe use importURIs similar to ImportUriGlobalScopeProvider)
-  * -> might not really be needed, by looking at the already existing example applications having all proper unique reaction-segment names ..
-  
-* think about how to resolve duplicate functions names in different includes
-  * is there a way to 'fully qualify' function calls?
-  * maybe by optionally specifying an function-name prefix which gets applied to all imported functions
-    * -> done.
-
-* including functions from other projects/etc. requires them to export the corresponding generated package for the generated functions
-  * is there a better way to reference external functions?
-  * is there a way to generically check if the generated code has errors
-    (ex. due to external package not being exported) and then forward that error
-    to the author of the .functions file?
-  * -> might be to tricky to do..
-
-* maybe use 'import' keyword, similar to how MirBase uses it as well for metamodelImports
-  * error when generating the language parser: 'ambiguous ..'
-  * -> using 'import functions from' now, can be easily changed to something else (as long as it's not 'import' only ..)
+open questions:
+* auto completion for function names in XExpression code blocks? (unrelated to modularization)
+* allow referencing of functions from other segments in the same file?
+  * maybe via implicit import?
+  * but: what about duplicate function names? no way to specify prefix for implicitly imported functions
+    * maybe disallow duplicate function names in the same file?
+    * or somehow allow qualified referencing of functions:
+      * sample.f does not work as function name
+      * always add sample_f implicitly?
+        * includes: disallow _ in function names -> done (as warning currently)
+   * maybe always add sample_f implicitly for segments in same file, but also allow referencing via no prefix (which works as long as there is no name clash)
+* (remove prefix again and) implicitly always use 'segmentName_' as prefix?
+  -> no, default should be no prefix
+* null possible?
+  * incomplete/invalid functions imports seem to not trigger generation/validation due to 'cannot be resolved' error
+* functions files without resource (not inside file) possible? finding visible containers/functions segments requires the resource to start from
