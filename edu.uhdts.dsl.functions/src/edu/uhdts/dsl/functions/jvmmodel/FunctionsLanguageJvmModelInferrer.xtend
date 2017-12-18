@@ -33,12 +33,15 @@ class FunctionsLanguageJvmModelInferrer extends AbstractModelInferrer {
 		acceptor.accept(new FunctionClassGenerator(function, typesBuilderExtensionProvider));
 	}
 
-	def dispatch void infer(FunctionsFile functionsFile, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(FunctionsFile functionsFile, IJvmDeclaredTypeAcceptor acceptor,
+		boolean isPreIndexingPhase) {
 		updateBuilders();
 
-		acceptor.accept(new FunctionFacadeClassGenerator(functionsFile, typesBuilderExtensionProvider));
-		for (function : functionsFile.functions) {
-			generate(function, acceptor, isPreIndexingPhase);
+		for (functionsSegment : functionsFile.functionsSegments) {
+			acceptor.accept(new FunctionFacadeClassGenerator(functionsSegment, typesBuilderExtensionProvider));
+			for (function : functionsSegment.functions) {
+				generate(function, acceptor, isPreIndexingPhase);
+			}
 		}
 	}
 

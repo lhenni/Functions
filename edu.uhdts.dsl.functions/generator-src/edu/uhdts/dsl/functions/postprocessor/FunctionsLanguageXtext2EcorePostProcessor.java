@@ -29,30 +29,37 @@ public class FunctionsLanguageXtext2EcorePostProcessor implements IXtext2EcorePo
 	private static EClass getEClass(EPackage ePackage, String name) {
 		return requireType(ePackage.getEClassifier(name), EClass.class);
 	}
-	
+
 	@Override
 	public void process(GeneratedMetamodel metamodel) {
 		if (!metamodel.getName().equals("functionsLanguage"))
-			return;
-		
+																return;
+
 		final EPackage ePackage = metamodel.getEPackage();
 		final EClass functionsFileEClass = getEClass(ePackage, "FunctionsFile");
+		final EClass functionsSegmentEClass = getEClass(ePackage, "FunctionsSegment");
 		final EClass functionEClass = getEClass(ePackage, "Function");
-		
+
+		// Add an opposite reference for the functions file to the functions segment
+		final EReference functionsFileFunctionsSegmentsReference = (EReference) functionsFileEClass.getEStructuralFeature("functionsSegments");
+		addOppositeEReference(functionsSegmentEClass, "functionsFile", functionsFileFunctionsSegmentsReference);
+
 		// Add an opposite reference for the metamodel pair to the function
-		final EReference functionsFileFunctionsReference = (EReference)functionsFileEClass.getEStructuralFeature("functions");
-		addFunctionsFileEReference(functionEClass, functionsFileFunctionsReference);
+		final EReference functionsSegmentFunctionsReference = (EReference) functionsSegmentEClass.getEStructuralFeature("functions");
+		//addFunctionsSegmentEReference(functionEClass, functionsSegmentFunctionsReference);
+		addOppositeEReference(functionEClass, "functionsSegment", functionsSegmentFunctionsReference);
 	}
 
-	private EReference addFunctionsFileEReference(EClass classToAddReferenceTo, EReference oppositeReference) {
-		final EReference functionsFileReference = EcoreFactory.eINSTANCE.createEReference();
-		functionsFileReference.setName("functionsFile");
-		functionsFileReference.setEType(classToAddReferenceTo.getEPackage().getEClassifier("FunctionsFile"));
-		functionsFileReference.setLowerBound(1);
-		functionsFileReference.setUpperBound(1);
-		oppositeReference.setEOpposite(functionsFileReference);
-		functionsFileReference.setEOpposite(oppositeReference);
-		classToAddReferenceTo.getEStructuralFeatures().add(functionsFileReference);
-		return functionsFileReference;
+	private EReference addOppositeEReference(EClass classToAddReferenceTo, String referenceName, EReference oppositeReference) {
+		final EReference reference = EcoreFactory.eINSTANCE.createEReference();
+		reference.setName(referenceName);
+		// reference.setEType(classToAddReferenceTo.getEPackage().getEClassifier(referenceTypeName));
+		reference.setEType(oppositeReference.getEContainingClass());
+		reference.setLowerBound(1);
+		reference.setUpperBound(1);
+		oppositeReference.setEOpposite(reference);
+		reference.setEOpposite(oppositeReference);
+		classToAddReferenceTo.getEStructuralFeatures().add(reference);
+		return reference;
 	}
 }

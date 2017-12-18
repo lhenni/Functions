@@ -31,7 +31,7 @@ class FunctionClassGenerator extends ClassGenerator {
 		super(typesBuilderExtensionProvider)
 		this.function = function;
 		this.functionClassNameGenerator = function.functionClassNameGenerator;
-		this.functionsFacadeClassNameGenerator = function.functionsFile.functionsFacadeClassNameGenerator;
+		this.functionsFacadeClassNameGenerator = function.functionsSegment.functionsFacadeClassNameGenerator;
 		this.generalUserExecutionClassQualifiedName = functionClassNameGenerator.qualifiedName + "." + USER_EXECUTION_SIMPLE_NAME;
 		this.userExecutionClassGenerator = new UserExecutionClassGenerator(typesBuilderExtensionProvider, function, 
 			functionClassNameGenerator.qualifiedName + "." + USER_EXECUTION_SIMPLE_NAME);

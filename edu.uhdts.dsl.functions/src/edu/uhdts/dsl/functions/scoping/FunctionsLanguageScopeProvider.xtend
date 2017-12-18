@@ -3,7 +3,6 @@
  */
 package edu.uhdts.dsl.functions.scoping
 
-
 /**
  * This class contains custom scoping description.
  * 

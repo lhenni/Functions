@@ -11,14 +11,14 @@ import org.eclipse.xtext.xbase.scoping.XImportSectionNamespaceScopeProvider
 
 class FunctionsLanguageScopeProviderDelegate extends XImportSectionNamespaceScopeProvider {
 
-	@Inject FunctionsFileScopeHelper functionsFileScopeHelper
+	@Inject FunctionsImportScopeHelper functionsImportScopeHelper
 
 	override getScope(EObject context, EReference reference) {
 		// context differs during content assist: 
 		// * if no input is provided yet, the container is the context as the element is not known yet
 		// * if some input is already provided, the element is the context
-		if (reference.equals(FunctionsLanguagePackage.Literals.FUNCTIONS_IMPORT__FUNCTIONS_FILE)) {
-			return functionsFileScopeHelper.createScope(context.eResource, false)
+		if (reference.equals(FunctionsLanguagePackage.Literals.FUNCTIONS_IMPORT__FUNCTIONS_SEGMENT)) {
+			return functionsImportScopeHelper.createScope(context.eResource)
 
 		// parent scopes forwards to DefaultGlobalScope which already includes all FunctionsFiles from visible resources
 		// -> filter local FunctionsFiles from parent scope:
