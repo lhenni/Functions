@@ -4,12 +4,80 @@
 package edu.uhdts.dsl.functions.ui.outline
 
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
+import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
+import edu.uhdts.dsl.functions.functionsLanguage.FunctionsFile
+import edu.uhdts.dsl.functions.functionsLanguage.FunctionsSegment
+import org.eclipse.xtext.ui.editor.outline.impl.EStructuralFeatureNode
+import edu.uhdts.dsl.functions.functionsLanguage.Function
+import edu.uhdts.dsl.functions.functionsLanguage.FunctionsLanguagePackage
+import edu.uhdts.dsl.functions.functionsLanguage.MetamodelImport
+import edu.uhdts.dsl.functions.functionsLanguage.FunctionsImport
 
 /**
  * Customization of the default outline structure.
- *
+ * 
  * See https://www.eclipse.org/Xtext/documentation/310_eclipse_support.html#outline
  */
 class FunctionsLanguageOutlineTreeProvider extends DefaultOutlineTreeProvider {
 
+	protected def void _createChildren(DocumentRootNode root, FunctionsFile functionsFile) {
+		val importsNode = createEStructuralFeatureNode(root, functionsFile,
+			FunctionsLanguagePackage.Literals.FUNCTIONS_FILE__METAMODEL_IMPORTS, imageDispatcher.invoke(functionsFile),
+			"imports", false);
+		for (imp : functionsFile.metamodelImports) {
+			createChildren(importsNode, imp);
+		}
+
+		val functionsImportsNode = createEStructuralFeatureNode(root, functionsFile,
+			FunctionsLanguagePackage.Literals.FUNCTIONS_FILE__FUNCTIONS_IMPORTS, imageDispatcher.invoke(functionsFile),
+			"functionsImports", false);
+		for (imp : functionsFile.functionsImports) {
+			createChildren(functionsImportsNode, imp);
+		}
+		for (functionsSegment : functionsFile.functionsSegments) {
+			createChildren(root, functionsSegment);
+		}
+	}
+
+	protected def void _createChildren(DocumentRootNode parentNode, FunctionsSegment functionsSegment) {
+		val segmentNode = createEObjectNode(parentNode, functionsSegment);
+		val routinesNode = createEStructuralFeatureNode(segmentNode, functionsSegment,
+			FunctionsLanguagePackage.Literals.FUNCTIONS_SEGMENT__FUNCTIONS, imageDispatcher.invoke(functionsSegment),
+			"functions", false)
+		for (functions : functionsSegment.functions) {
+			createChildren(routinesNode, functions);
+		}
+	}
+
+	protected def void _createChildren(EStructuralFeatureNode parentNode, MetamodelImport imp) {
+		val importNode = createEObjectNode(parentNode, imp);
+		createEStructuralFeatureNode(importNode, imp, FunctionsLanguagePackage.Literals.METAMODEL_IMPORT__PACKAGE,
+			imageDispatcher.invoke(imp.package), imp.package.name, true);
+	}
+
+	protected def void _createChildren(EStructuralFeatureNode parentNode, FunctionsImport imp) {
+		val importNode = createEObjectNode(parentNode, imp);
+		createEStructuralFeatureNode(importNode, imp, FunctionsLanguagePackage.Literals.FUNCTIONS_IMPORT__FUNCTIONS_SEGMENT,
+			imageDispatcher.invoke(imp.functionsSegment), imp.functionsSegment.name, true);
+	}
+
+	protected def void _createChildren(EStructuralFeatureNode parentNode, Function function) {
+		createEObjectNode(parentNode, function);
+	}
+
+	protected def Object _text(MetamodelImport imp) {
+		return imp?.name;
+	}
+
+	protected def Object _text(FunctionsImport imp) {
+		return imp?.functionsSegment.name;
+	}
+
+	protected def Object _text(Function function) {
+		return "function: " + function.name;
+	}
+
+	protected def Object _text(FunctionsSegment functionsSegment) {
+		return "segment: " + functionsSegment.name;
+	}
 }
