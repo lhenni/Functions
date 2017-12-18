@@ -12,8 +12,8 @@ import org.eclipse.xtext.resource.IResourceDescriptionsProvider
 @Singleton
 class FunctionsImportScopeHelper {
 
-	@Inject IContainer.Manager containerManager
 	@Inject IResourceDescriptionsProvider provider;
+	@Inject IContainer.Manager containerManager;
 
 	def createScope(Resource resource) {
 		val visibleFunctionsSegments = getVisibleFunctionsSegmentDescriptions(resource, false);
