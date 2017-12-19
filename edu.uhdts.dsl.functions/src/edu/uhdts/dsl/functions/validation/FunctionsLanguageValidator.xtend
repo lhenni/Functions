@@ -56,14 +56,13 @@ class FunctionsLanguageValidator extends AbstractFunctionsLanguageValidator {
 		}
 
 		// detect duplicate functions segment names globally:
-		val visibleFunctionsFiles = functionsImportScopeHelper.
-			getVisibleFunctionsSegmentDescriptions(functionsFile.eResource, false);
+		val visibleFunctionsSegments = functionsImportScopeHelper.getVisibleFunctionsSegmentDescriptions(functionsFile.eResource, false);
 		for (functionsSegment : functionsFile.functionsSegments) {
 			val functionsSegmentName = functionsSegment.name;
-			val otherFunctionsFile = visibleFunctionsFiles.findFirst[name.toString.equals(functionsSegmentName)];
-			if (otherFunctionsFile !== null) {
+			val otherFunctionsSegment = visibleFunctionsSegments.findFirst[name.toString.equals(functionsSegmentName)];
+			if (otherFunctionsSegment !== null) {
 				// path relative to current file:
-				val path = otherFunctionsFile.EObjectURI.trimFragment.deresolve(functionsSegment.eResource.URI);
+				val path = otherFunctionsSegment.EObjectURI.trimFragment.deresolve(functionsSegment.eResource.URI);
 				warning(
 					"Duplicate functions segment name '" + functionsSegmentName + "': Already defined in " + path,
 					functionsSegment,
